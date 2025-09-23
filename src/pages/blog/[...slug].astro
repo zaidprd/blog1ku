@@ -1,0 +1,44 @@
+---
+import { client } from '../../lib/sanity';
+import { PortableText } from 'astro-portabletext';
+import Layout from '../../layouts/Layout.astro';
+import { urlFor } from '../../lib/image';
+
+export async function getStaticPaths() {
+  const posts = await client.fetch(`*[_type == "post"] {
+    "slug": slug.current
+  }`);
+  
+  return posts.map(post => ({
+    params: { slug: post.slug }
+  }));
+}
+
+const { slug } = Astro.params;
+const post = await client.fetch(`*[_type == "post" && slug.current == "${slug}"][0] {
+  ...,
+  "slug": slug.current,
+  mainImage,
+  author->
+}`);
+---
+<Layout title={post.title}>
+  <article class="prose max-w-none prose-indigo mx-auto">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-extrabold text-gray-900 mb-2">{post.title}</h1>
+      <p class="text-gray-600">
+        Oleh {post.author.name}
+      </p>
+    </header>
+
+    {post.mainImage && (
+      <img
+        src={urlFor(post.mainImage).url()}
+        alt={post.title}
+        class="w-full h-80 object-cover rounded-lg mb-8"
+      />
+    )}
+
+    <PortableText value={post.body} />
+  </article>
+</Layout>
