@@ -23,22 +23,23 @@ const post = await client.fetch(`*[_type == "post" && slug.current == "${slug}"]
 }`);
 ---
 <Layout title={post.title}>
-  <article class="prose max-w-none prose-indigo mx-auto">
-    <header class="text-center mb-12">
-      <h1 class="text-4xl font-extrabold text-gray-900 mb-2">{post.title}</h1>
-      <p class="text-gray-600">
-        Oleh {post.author.name}
-      </p>
-    </header>
-
-    {post.mainImage && (
+  {post.mainImage && (
+    <div class="relative overflow-hidden mx-auto w-11/12 max-w-4xl rounded-3xl mt-4 mb-8 h-[400px]">
       <img
         src={urlFor(post.mainImage).url()}
         alt={post.title}
-        class="w-full h-80 object-cover rounded-lg mb-8"
+        class="w-full h-full object-cover"
       />
-    )}
+      <div class="absolute inset-0 bg-black/40"></div>
+      <div class="absolute inset-0 flex items-center justify-center text-center text-white">
+        <h1 class="text-5xl font-extrabold px-4">{post.title}</h1>
+      </div>
+    </div>
+  )}
 
-    <PortableText value={post.body} />
-  </article>
+  <main class="container mx-auto px-4 py-12 max-w-4xl">
+    <article class="prose dark:prose-invert prose-lg">
+      <PortableText value={post.body} />
+    </article>
+  </main>
 </Layout>
